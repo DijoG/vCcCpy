@@ -3,7 +3,7 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Python package for calculating vegetation and/or canopy cover ratios from high resolution raster (10m or >10m) data for polygon features. Supports processing of large polygons through intelligent splitting and memory-efficient chunkwise processing.
+A Python package for calculating vegetation and/or canopy cover ratios from high resolution raster (<=10m) data for polygon features. Supports processing of large polygons through intelligent splitting and memory-efficient chunkwise processing.
 
 ## Features
 
