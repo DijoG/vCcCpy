@@ -17,8 +17,22 @@ A Python package for calculating vegetation and/or canopy cover ratios from high
 ## Installation
 
 ```bash
-pip install vCcCpy
+## Version 1:
+pip install git+https://github.com/DijoG/vCcCpy.git
+
+## Version 2:
+# Clone the repository
+git clone https://github.com/DijoG/vCcCpy.git
+cd vCcCpy
+
+# Install in development mode
+pip install -e .
 ```
+
 ## Usage
 
-Go to the 'test' directory and consider 'test_01a.py', 'test_01b.py' and 'test_02.py' files. Have fun and happy coding!
+Go to the 'test' directory and consider 'test_01a.py', 'test_01b.py' for get_VEGETATION() and 'test_02.py' for get_VCratio() and get_VCarea(). Have fun and happy coding!
+
+## IMPORTANT NOTE
+
+Please NEVER change the code in this repository!
