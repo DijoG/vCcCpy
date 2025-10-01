@@ -31,7 +31,7 @@ pip install -e .
 
 ## Usage
 
-Go to the ***test*** directory and consider *test_01a.py*, *test_01b.py* for ***get_VEGETATION()*** and *test_02.py* for ***get_VCratio()*** and ***get_VCarea()***. 
+Go to the ***test*** directory and consider *test_01a.py* and *test_01b.py* for ***get_VEGETATION()***, *test_02.py* for ***get_VCratio()*** and ***get_VCarea()***. 
 
 ## Important
 
