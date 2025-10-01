@@ -15,3 +15,7 @@ A Python package for calculating vegetation and/or canopy cover ratios from high
 
 ```bash
 pip install vCcCpy
+```
+## Installation
+
+Go to the 'test' directory and consider 'test_01a.py', 'test_01b.py' and 'test_02.py' files. Have fun and happy coding!
