@@ -31,12 +31,12 @@ pip install -e .
 
 ## Usage
 
-Go to the 'test' directory and consider *test_01a.py*, *test_01b.py* for **get_VEGETATION()** and *test_02.py* for **get_VCratio()** and **get_VCarea()**. 
+Go to the 'test' directory and consider *test_01a.py*, *test_01b.py* for ***get_VEGETATION()*** and *test_02.py* for ***get_VCratio()*** and ***get_VCarea()***. 
 
 ## IMPORTANT NOTES
 
-- ****get_VCratio()** and **get_VCarea()** were developed and tested using 10m resolution raster data.**
-- ****get_VEGETATION()** was developed and tested using 0.3m resolution raster data.**
-- **Please NEVER change the code in this repository!**
+- *****get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.**
+- *****get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution raster data.**
+- **Please NEVER change the code of the scripts present in this repository!**
 
-# Have fun and happy coding!
+***Have fun and happy coding!***
