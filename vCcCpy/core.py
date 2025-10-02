@@ -849,8 +849,6 @@ def explode_pid(vector_path, field_to_string):
     Returns:
     geopandas.GeoDataFrame: Exploded GeoDataFrame with unique polygon IDs
     """
-    import geopandas as gpd
-    
     # Load data
     VEC = gpd.read_file(vector_path)
     
