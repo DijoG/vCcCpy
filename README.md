@@ -37,7 +37,7 @@ Go to the ***test*** directory and consider *test_01a.py* and *test_01b.py* for 
 
 - **Input raster MUST BE binarized (1 = vegetation or canopy, 0 = everything else)!**
 - *****get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.**
-- *****get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution raster data.**
+- *****get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution STACKED raster data.**
 - **Please NEVER change the code of the scripts present in this repository!**
 
 ***Have fun and happy coding!***
