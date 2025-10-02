@@ -5,7 +5,7 @@ from vCcCpy.core import get_VEGETATION, explode_pid
 from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
 import time
 
-# Load data, explode preserving GeoDataFrame structure (creating a new attribute named 'pid')
+# Load data, explode preserving GeoDataFrame structure (creating a new attribute named 'pid' concatenating 'field_to_string')
 GRP = explode_pid("D:/KPI/vector/GRPtypo.geojson", field_to_string='MCAT')
 
 # Filter "Large_Parks" and "Wadis" in the 'MCAT' attribute for testing
@@ -45,7 +45,7 @@ print(f"After pre-splitting: {len(GRP_pre_split)} polygons")
 # 2) Vegetation analysis -------------------------------------------------------------------
 result = get_VEGETATION(
     polygons=GRP_pre_split,
-    veg_raster=r"C:/Users/Administrator/BPLA Dropbox/03 Planning/1232-T2-TM2_1-GIS-Remote-Sensing/06_GIS-Data/09_LCC/LCC_2022_VC_CC/LCC_2022_4_1to1_CC_EPSG32638.tif",
+    veg_raster=r"C:/.../1232-T2-TM2_1-GIS-Remote-Sensing/06_GIS-Data/09_LCC/LCC_2022_VC_CC/LCC_2022_4_1to1_CC_EPSG32638.tif",
     output_path=r"D:/KPI/vector/CC22test_LPWadioptimum.gpkg",
     id_field="pid",
     by_row=True,           
