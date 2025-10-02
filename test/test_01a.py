@@ -5,7 +5,7 @@ from vCcCpy.core import get_VEGETATION, explode_pid
 from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
 import time
 
-# Load data, explode preserving GeoDataFrame structure (creating a new attribute named 'pid')
+# Load data, explode preserving GeoDataFrame structure (creating a new attribute named 'pid' cocatenating 'field_to_string')
 GRP = explode_pid("D:/KPI/vector/GRPtypo.geojson", field_to_string='MCAT')
 
 # Filter "Large_Parks" and "Wadis" in the 'MCAT' attribute for testing
