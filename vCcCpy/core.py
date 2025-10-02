@@ -739,6 +739,7 @@ def aggregate_by_field(gpkg_path: str, output_path: str = None, group_by: str = 
            VCratio = round(VegArea/PolyArea * 100, 2),
            MCAT = gsub("_|[0-9]", "", pid))
     """
+    # Load data
     gdf = gpd.read_file(gpkg_path)
     
     aggregated = gdf.groupby(group_by).agg({
