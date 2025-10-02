@@ -8,7 +8,7 @@ MET = "D:/KPI/vector/METROu.geojson"
 # Raster data path  
 R = "D:/KPI/raster/202502and08m.tif"
 
-# CRS check, transformation and feature validation
+# CRS check, transformation and feature repair
 metro_gdf = crs_check_transform(MET, R)
 grp_gdf = crs_check_transform(GRP, R)
 
