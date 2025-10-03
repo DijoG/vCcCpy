@@ -17,12 +17,12 @@ print(f"Total area: {GRP_test.geometry.area.sum():.0f} m²")
 # 1) Pre-splitting process -----------------------------------------------------------------
 GRP_test['PolyArea'] = GRP_test.geometry.area
 
-# Split the polygons
+# Get polygon size statistics for the categories in 'MCAT'
 stats = analyze_polygon_sizes(GRP_test, category_field="MCAT")  # Use "MCAT" not "pid"
 print("Polygon size statistics:")
 print(stats)
 
-# Then create strategies based on the analysis
+# Create strategies based on the analysis
 strategies = {
     "Wadis": {"threshold": 5000000, "n_areas": 30},
     "Large_Parks": {"threshold": 200000, "n_areas": 20}  
@@ -35,6 +35,7 @@ strategies = {
 #     "Large_Parks": {"threshold": stats.loc["Large_Parks", "recommended_threshold"], "n_areas": 20}
 # }
 
+# Split large polygons based on the defined strategies
 GRP_pre_split = split_large_polygons(GRP_test, 
                                      category_field="MCAT", 
                                      splitting_strategies=strategies,
