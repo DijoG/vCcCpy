@@ -19,7 +19,7 @@ class AdaptivePolygonSplitter:
         self.min_area_ratio = min_area_ratio
     
     def split_polygon(self, polygon: Polygon, id_value: str, 
-                     id_field: str = 'id') -> gpd.GeoDataFrame:
+                     id_field: str = 'id', original_crs=None) -> gpd.GeoDataFrame:
         """
         Split a single polygon into smaller sub-polygons.
         
@@ -31,29 +31,45 @@ class AdaptivePolygonSplitter:
             Original polygon ID
         id_field : str
             ID field name
+        original_crs : any, optional
+            Original CRS to preserve
             
         Returns
         -------
         geopandas.GeoDataFrame
             Split polygons with attributes
         """
+        # Validate and fix geometry
+        if not polygon.is_valid:
+            try:
+                polygon = polygon.buffer(0)
+            except Exception as e:
+                logger.warning(f"Could not fix invalid geometry: {e}")
+                # Return original as fallback
+                return gpd.GeoDataFrame(
+                    {id_field: [id_value], 'PolyArea': [polygon.area]},
+                    geometry=[polygon],
+                    crs=original_crs
+                )
+        
         if not isinstance(polygon, (Polygon, MultiPolygon)):
             raise ValueError("Input must be a Polygon or MultiPolygon")
         
-        # For very small polygons, don't split
         area = polygon.area
+        
+        # For very small polygons, don't split
         if area < 1000:  # 1000 m² threshold
             return gpd.GeoDataFrame(
                 {id_field: [id_value], 'PolyArea': [area]},
                 geometry=[polygon],
-                crs=None
+                crs=original_crs
             )
         
         # Calculate optimal grid dimensions based on aspect ratio
         bounds = polygon.bounds
         width = bounds[2] - bounds[0]
         height = bounds[3] - bounds[1]
-        aspect_ratio = width / height
+        aspect_ratio = width / height if height > 0 else 1.0
         
         if aspect_ratio > 3:
             # Long and narrow
@@ -74,9 +90,36 @@ class AdaptivePolygonSplitter:
         grid_polygons = self._create_grid(bounds, grid_x, grid_y)
         split_polygons = self._intersect_with_polygon(grid_polygons, polygon)
         
-        # Filter out tiny slivers
-        area_threshold = max([p.area for p in split_polygons]) * self.min_area_ratio
-        filtered_polygons = [p for p in split_polygons if p.area >= area_threshold]
+        # Filter out tiny slivers with validation
+        valid_polygons = []
+        for p in split_polygons:
+            if not p.is_valid:
+                try:
+                    p = p.buffer(0)
+                except Exception as e:
+                    logger.debug(f"Could not fix invalid split geometry: {e}")
+                    continue
+            
+            if p.is_valid and not p.is_empty:
+                valid_polygons.append(p)
+        
+        if not valid_polygons:
+            # Return original if splitting produced no valid geometries
+            return gpd.GeoDataFrame(
+                {id_field: [id_value], 'PolyArea': [area]},
+                geometry=[polygon],
+                crs=original_crs
+            )
+        
+        # Calculate area threshold based on valid polygons
+        max_area = max([p.area for p in valid_polygons])
+        area_threshold = max_area * self.min_area_ratio
+        
+        # Final filtering
+        filtered_polygons = []
+        for p in valid_polygons:
+            if p.area >= area_threshold:
+                filtered_polygons.append(p)
         
         # Create result GeoDataFrame
         result_gdf = gpd.GeoDataFrame(
@@ -85,7 +128,7 @@ class AdaptivePolygonSplitter:
                 'PolyArea': [p.area for p in filtered_polygons]
             },
             geometry=filtered_polygons,
-            crs=None
+            crs=original_crs
         )
         
         return result_gdf
@@ -164,9 +207,20 @@ def split_large_polygons(gdf: gpd.GeoDataFrame,
     geopandas.GeoDataFrame
         GeoDataFrame with large polygons split according to strategies
     """
+    # Store original count and CRS for diagnostics
+    original_count = len(gdf)
+    original_crs = gdf.crs
+    logger.info(f"Starting split_large_polygons with {original_count} polygons, CRS: {original_crs}")
+    
     # Calculate areas if not present
     if 'PolyArea' not in gdf.columns:
+        gdf = gdf.copy()
         gdf['PolyArea'] = gdf.geometry.area
+    
+    # Log category information if available
+    if category_field and category_field in gdf.columns:
+        category_counts = gdf[category_field].value_counts()
+        logger.info(f"Original category counts: {dict(category_counts)}")
     
     # Use default strategies if none provided
     if splitting_strategies is None:
@@ -175,61 +229,85 @@ def split_large_polygons(gdf: gpd.GeoDataFrame,
     # If no category field, use default strategy for all polygons
     if category_field is None or category_field not in gdf.columns:
         logger.info("No category field provided, using default splitting strategy for all polygons")
-        return _split_with_single_strategy(gdf, split_threshold, n_areas, id_field)
-    
-    # Process by category
-    logger.info(f"Using category-based splitting with field: {category_field}")
-    
-    # Get unique categories
-    categories = gdf[category_field].unique()
-    logger.info(f"Found categories: {list(categories)}")
-    
-    # Split results for each category
-    split_results = []
-    
-    for category in categories:
-        category_gdf = gdf[gdf[category_field] == category].copy()
-        
-        # Get strategy for this category
-        strategy = splitting_strategies.get(category, splitting_strategies.get('default'))
-        if strategy is None:
-            strategy = {'threshold': split_threshold, 'n_areas': n_areas}
-        
-        cat_threshold = strategy.get('threshold', split_threshold)
-        cat_n_areas = strategy.get('n_areas', n_areas)
-        
-        logger.info(f"Processing category '{category}': threshold={cat_threshold}, n_areas={cat_n_areas}")
-        
-        # Split polygons for this category
-        category_split = _split_with_single_strategy(
-            category_gdf, cat_threshold, cat_n_areas, id_field
-        )
-        
-        split_results.append(category_split)
-    
-    # Combine all results
-    if split_results:
-        result_gdf = gpd.GeoDataFrame(
-            pd.concat(split_results, ignore_index=True),
-            crs=gdf.crs
-        )
+        result_gdf = _split_with_single_strategy(gdf, split_threshold, n_areas, id_field, original_crs)
     else:
-        result_gdf = gdf
+        # Process by category
+        logger.info(f"Using category-based splitting with field: {category_field}")
+        
+        # Get unique categories
+        categories = gdf[category_field].unique()
+        logger.info(f"Found categories: {list(categories)}")
+        
+        # Split results for each category
+        split_results = []
+        
+        for category in categories:
+            category_gdf = gdf[gdf[category_field] == category].copy()
+            category_count = len(category_gdf)
+            
+            # Get strategy for this category
+            strategy = splitting_strategies.get(category, splitting_strategies.get('default'))
+            if strategy is None:
+                strategy = {'threshold': split_threshold, 'n_areas': n_areas}
+            
+            cat_threshold = strategy.get('threshold', split_threshold)
+            cat_n_areas = strategy.get('n_areas', n_areas)
+            
+            logger.info(f"Processing category '{category}' ({category_count} polygons): threshold={cat_threshold}, n_areas={cat_n_areas}")
+            
+            # Split polygons for this category
+            category_split = _split_with_single_strategy(
+                category_gdf, cat_threshold, cat_n_areas, id_field, original_crs
+            )
+            
+            split_results.append(category_split)
+        
+        # Combine all results
+        if split_results:
+            result_gdf = gpd.GeoDataFrame(
+                pd.concat(split_results, ignore_index=True),
+                crs=original_crs
+            )
+        else:
+            result_gdf = gdf
+    
+    # Final diagnostics
+    final_count = len(result_gdf)
+    logger.info(f"Split completed: {original_count} → {final_count} polygons")
+    
+    if category_field and category_field in result_gdf.columns:
+        final_category_counts = result_gdf[category_field].value_counts()
+        logger.info(f"Final category counts: {dict(final_category_counts)}")
+        
+        # Check for missing categories
+        if category_field in gdf.columns:
+            original_cats = set(gdf[category_field].unique())
+            final_cats = set(result_gdf[category_field].unique())
+            missing_cats = original_cats - final_cats
+            if missing_cats:
+                logger.warning(f"Missing categories after splitting: {missing_cats}")
     
     return result_gdf
 
 def _split_with_single_strategy(gdf: gpd.GeoDataFrame,
                               split_threshold: float,
                               n_areas: int,
-                              id_field: str) -> gpd.GeoDataFrame:
+                              id_field: str,
+                              original_crs: any) -> gpd.GeoDataFrame:
     """
     Split polygons using a single strategy (helper function).
     """
+    # Calculate areas if not present
+    if 'PolyArea' not in gdf.columns:
+        gdf = gdf.copy()
+        gdf['PolyArea'] = gdf.geometry.area
+    
     # Separate large and small polygons
     large_polys = gdf[gdf['PolyArea'] > split_threshold].copy()
     small_polys = gdf[gdf['PolyArea'] <= split_threshold].copy()
     
     if len(large_polys) == 0:
+        logger.info("No large polygons to split with current threshold")
         return gdf
     
     logger.info(f"Splitting {len(large_polys)} large polygons (threshold: {split_threshold}m²)")
@@ -239,49 +317,64 @@ def _split_with_single_strategy(gdf: gpd.GeoDataFrame,
     
     # Split large polygons
     split_results = []
+    successful_splits = 0
+    failed_splits = 0
+    
     for idx, row in large_polys.iterrows():
         try:
             split_gdf = splitter.split_polygon(
                 row.geometry, 
                 row[id_field], 
-                id_field
+                id_field,
+                original_crs=original_crs
             )
-            # Copy all other attributes to split polygons
+            
+            # Copy ALL original attributes to split polygons
             for col in row.index:
-                if col not in [id_field, 'geometry', 'PolyArea'] and col in split_gdf.columns:
+                if col not in split_gdf.columns and col != 'geometry':
                     split_gdf[col] = row[col]
+            
             split_results.append(split_gdf)
+            successful_splits += 1
+            
         except Exception as e:
             logger.error(f"Failed to split polygon {row[id_field]}: {e}")
             # Keep original polygon if splitting fails
             failed_gdf = gpd.GeoDataFrame(
                 {id_field: [row[id_field]], 'PolyArea': [row['PolyArea']]},
                 geometry=[row.geometry],
-                crs=gdf.crs
+                crs=original_crs
             )
             # Copy other attributes
             for col in row.index:
                 if col not in [id_field, 'geometry', 'PolyArea']:
                     failed_gdf[col] = row[col]
             split_results.append(failed_gdf)
+            failed_splits += 1
+    
+    logger.info(f"Splitting results: {successful_splits} successful, {failed_splits} failed")
     
     # Combine results with proper CRS handling
     if split_results:
-        # Combine all split results without CRS first
-        combined_split = pd.concat(split_results, ignore_index=True)
-        
-        # Create GeoDataFrame and set CRS explicitly
-        large_split = gpd.GeoDataFrame(combined_split)
-        large_split = large_split.set_crs(gdf.crs, allow_override=True)
+        # Combine all split results
+        combined_split = gpd.GeoDataFrame(
+            pd.concat(split_results, ignore_index=True),
+            crs=original_crs
+        )
         
         # Combine with small polygons
         if len(small_polys) > 0:
-            combined_all = pd.concat([small_polys, large_split], ignore_index=True)
-            result_gdf = gpd.GeoDataFrame(combined_all, crs=gdf.crs)
+            result_gdf = gpd.GeoDataFrame(
+                pd.concat([small_polys, combined_split], ignore_index=True),
+                crs=original_crs
+            )
         else:
-            result_gdf = large_split
+            result_gdf = combined_split
+            
+        logger.info(f"After splitting: {len(small_polys)} small + {len(combined_split)} split = {len(result_gdf)} total")
     else:
         result_gdf = gdf
+        logger.warning("No split results generated, returning original")
     
     return result_gdf
 
