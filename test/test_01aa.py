@@ -24,8 +24,8 @@ stats = analyze_polygon_sizes(GRP, category_field="CATEGORY")     # Use "CATEGOR
 
 # Then create strategies 
 strategies = {
-    "Natural Wadi": {"threshold": 6000000, "n_areas": 10},
-    "Urban Wadi": {"threshold": 5000000, "n_areas": 10},
+    "Natural Wadi": {"threshold": 6000000, "n_areas": 3},
+    "Urban Wadi": {"threshold": 5000000, "n_areas": 3},
     "Natural City Park": {"threshold": 300000, "n_areas": 5}, 
     "Urban City Park": {"threshold": 300000, "n_areas": 5},
     "default": {"threshold": 200000, "n_areas": 3}               # for anything else not defined
