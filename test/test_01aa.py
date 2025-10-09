@@ -5,7 +5,7 @@ from vCcCpy.core import get_VEGETATION, explode_pid
 import time
 import pandas as pd  
 
-# 1) Data preparation --------------------------------------------------------------------------
+# 1) Data preparation ----------------------------------------------------------------------
 # Load data, explode preserving GeoDataFrame structure (creating a new attribute named 'pid' concatenating the attribute defined in field_to_string)
 GRP = explode_pid("D:/KPI/vector/GRPfullNAME.geojson", field_to_string="NAME_ENGLI")  # "D:/KPI/vector/GRPtypo.geojson" or "D:/KPI/vector/GRPfullNAME.geojson"; 'MCAT' or 'NAME_ENGLI'
 
@@ -67,7 +67,7 @@ print("=" * 50)
 # 2) Vegetation analysis -------------------------------------------------------------------
 result = get_VEGETATION(
     polygons=GRP_no_split,
-    veg_raster=r"C:/Users/Administrator/BPLA Dropbox/03 Planning/1232-T2-TM2_1-GIS-Remote-Sensing/06_GIS-Data/09_LCC/LCC_2022_VC_CC/LCC_2022_4_1to1_CC_EPSG32638.tif",
+    veg_raster=r".../1232-T2-TM2_1-GIS-Remote-Sensing/06_GIS-Data/09_LCC/LCC_2022_VC_CC/LCC_2022_4_1to1_CC_EPSG32638.tif",
     output_path=r"D:/KPI/vector/CC22test_ALLOPTIoptimum.gpkg",
     id_field="pid",
     by_row=True,           
