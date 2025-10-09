@@ -2,10 +2,10 @@ import geopandas as gpd
 import sys
 import os
 from vCcCpy.core import get_VEGETATION, explode_pid
-from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
 import time
 import pandas as pd  
 
+# 1) Data preparation --------------------------------------------------------------------------
 # Load data, explode preserving GeoDataFrame structure (creating a new attribute named 'pid' concatenating the attribute defined in field_to_string)
 GRP = explode_pid("D:/KPI/vector/GRPfullNAME.geojson", field_to_string="NAME_ENGLI")  # "D:/KPI/vector/GRPtypo.geojson" or "D:/KPI/vector/GRPfullNAME.geojson"; 'MCAT' or 'NAME_ENGLI'
 
@@ -15,47 +15,20 @@ print(f"Original categories: {GRP['CATEGORY'].unique()}")
 original_categories = set(GRP['CATEGORY'].unique())
 original_count = len(GRP)
 
-# 1) Pre-splitting process -----------------------------------------------------------------
-# Add area column 
+# Add 'PolyArea' column 
 GRP['PolyArea'] = GRP.geometry.area
 
-# Get stats
-stats = analyze_polygon_sizes(GRP, category_field="CATEGORY")     # Use "CATEGORY" not "pid"
+# Rename data (no splitting -> preserving all features):
+GRP_no_split = GRP
 
-# Then create strategies 
-strategies = {
-    "Natural Wadi": {"threshold": 6000000, "n_areas": 3},         # 6 km² threshold
-    "Urban Wadi": {"threshold": 5000000, "n_areas": 3},           # 5 km² threshold
-    "Natural City Park": {"threshold": 3000000, "n_areas": 5},    # 3 km² threshold
-    "Urban City Park": {"threshold": 3000000, "n_areas": 5},      # 3 km² threshold
-    "default": {"threshold": 2000000, "n_areas": 3}               # 3 km² threshold for anything else not defined
-}
-
-# Print strategies for verification
-print("Using splitting strategies:")
-for cat, strategy in strategies.items():
-    print(f"  {cat}: threshold={strategy['threshold']:,}, n_areas={strategy['n_areas']}")
-
-# You can also create strategies based on the stats:
-# strategies = {
-#     "Natural Wadi": {"threshold": 6000000, "n_areas": 10},
-#     "Urban Wadi": {"threshold": stats.loc["Urban Wadi", "recommended_threshold"], "n_areas": 10}
-# }
-
-# Split large polygons based on the defined strategies
-GRP_pre_split = split_large_polygons(GRP,  
-                                     category_field="CATEGORY",  
-                                     splitting_strategies=strategies,
-                                     id_field="pid")
-
-print("\n=== SPLITTING DIAGNOSTICS ===")
+print("\n=== INTERMEDIATE DIAGNOSTICS ===")
 print(f"Original count: {original_count}")
-print(f"After pre-splitting: {len(GRP_pre_split)}")
-print(f"Net change: {len(GRP_pre_split) - original_count} polygons")
+print(f"After pre-splitting: {len(GRP_no_split)}")
+print(f"Net change: {len(GRP_no_split) - original_count} polygons")
 
 # Check category preservation
-if 'CATEGORY' in GRP_pre_split.columns:
-    split_categories = set(GRP_pre_split['CATEGORY'].unique())
+if 'CATEGORY' in GRP_no_split.columns:
+    split_categories = set(GRP_no_split['CATEGORY'].unique())
     print(f"Original categories: {original_categories}")
     print(f"After splitting categories: {split_categories}")
     
@@ -77,7 +50,7 @@ if 'CATEGORY' in GRP_pre_split.columns:
 
 # Check area preservation
 original_total_area = GRP['PolyArea'].sum()
-split_total_area = GRP_pre_split['PolyArea'].sum()
+split_total_area = GRP_no_split['PolyArea'].sum()
 
 # A nuanced area change reporting
 area_diff_pct = ((split_total_area - original_total_area) / original_total_area) * 100
@@ -93,7 +66,7 @@ print("=" * 50)
 
 # 2) Vegetation analysis -------------------------------------------------------------------
 result = get_VEGETATION(
-    polygons=GRP_pre_split,
+    polygons=GRP_no_split,
     veg_raster=r"C:/Users/Administrator/BPLA Dropbox/03 Planning/1232-T2-TM2_1-GIS-Remote-Sensing/06_GIS-Data/09_LCC/LCC_2022_VC_CC/LCC_2022_4_1to1_CC_EPSG32638.tif",
     output_path=r"D:/KPI/vector/CC22test_ALLOPTIoptimum.gpkg",
     id_field="pid",
