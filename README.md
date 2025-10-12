@@ -29,13 +29,11 @@ cd vCcCpy
 pip install -e .
 ```
 
-## Usage
-
-Go to the ***test*** directory and use/modify *test_01a.py* or *test_01aa.py* combined with *test_01b.py* for ***get_VEGETATION()***, *test_02.py* for ***get_VCratio()*** and ***get_VCarea()***. 
-
-## Important
+## Usage and Important notes
 
 - **Input raster MUST BE binarized (1 = vegetation or canopy, 0 = everything else)!**
+- **Use default (no pre-splitting) chunkwise processing, ONLY in case of very large files (or low computational resorces) pre-split!** 
+- **test_1aa.py is for chunkwise processing without pre-splitting, test_1a.py combined with test_01b.py shows pre-splitting.**
 - *****get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.**
 - *****get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution STACKED raster data.**
 - **Please NEVER change the code of the scripts present in this repository!**
