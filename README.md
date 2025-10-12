@@ -31,11 +31,11 @@ pip install -e .
 
 ## Usage and Important notes
 
-- **Input raster MUST BE binarized (1 = vegetation or canopy, 0 = everything else)!**
-- **Use default (no pre-splitting) chunkwise processing, ONLY in case of very large files (or low computational resorces) pre-split!** 
-- ***test_1aa.py* is for chunkwise processing without pre-splitting, *test_1a.py* combined with *test_01b.py* shows pre-splitting.**
-- *****get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.**
-- *****get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution STACKED raster data.**
+- Input raster **MUST BE** binarized (1 = vegetation or canopy, 0 = everything else)!
+- Use **default (no pre-splitting) chunkwise processing**, **ONLY in case of very large files (or low computational resorces)** pre-split! 
+- ***test_1aa.py*** is for chunkwise processing without pre-splitting, ***test_1a.py*** combined with ***test_01b.py*** shows pre-splitting.
+- ***get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.
+- ***get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution STACKED raster data.
 - **Please NEVER change the code of the scripts present in this repository!**
 
 ***Have fun and happy coding!***
