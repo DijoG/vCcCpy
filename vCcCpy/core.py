@@ -751,8 +751,9 @@ def aggregate_by_field(gpkg_path: str, output_path: str = None, group_by: str = 
     result_gdf['PolyArea'] = result_gdf.geometry.area.round(2)
     result_gdf['VCratio'] = ((result_gdf['VegArea'] / result_gdf['PolyArea']) * 100).round(2)
     
-    # Extract MCAT from pid (equivalent to gsub("_|[0-9]", "", pid))
-    result_gdf['MCAT'] = result_gdf['pid'].str.replace(r'[_0-9]', '', regex=True)
+    # Extract MCAT from pid only when grouping by 'pid'(equivalent to gsub("_|[0-9]", "", pid))
+    if group_by == 'pid':
+        result_gdf['MCAT'] = result_gdf['pid'].str.replace(r'[_0-9]', '', regex=True)
     
     if output_path:
         result_gdf.to_file(output_path, driver='GPKG')
