@@ -36,7 +36,7 @@ pip install -e .
 - Pre-split only **in case of very large files (or low computational resorces)**! 
 - In **test** directory: 
     - ***test_01aa.py*** is for chunkwise processing without pre-splitting by ***get_VEGETATION()***,
-    - ***test_01a.py*** combined with ***test_01b.py*** shows pre-splitting by ***get_VEGETATION()***,
+    - ***test_01a.py*** combined with ***test_01b.py*** shows pre-splitting by ***get_VEGETATION()*** and feature aggregation by ***aggregate_by_field()***,
     - ***test_02.py*** is for vegetation ratio and area computation by ***get_VCration()*** and ***getVCarea()***.
 - ***get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.
 - ***get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution STACKED raster data.
