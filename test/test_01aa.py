@@ -34,7 +34,7 @@ if 'CATEGORY' in GRP_no_split.columns:
     
     missing_categories = original_categories - split_categories
     if missing_categories:
-        print(f"⚠️  WARNING: Missing categories: {missing_categories}")
+        print(f"WARNING: Missing categories: {missing_categories}")
         
         # Debug missing categories
         for missing_cat in missing_categories:
@@ -46,7 +46,7 @@ if 'CATEGORY' in GRP_no_split.columns:
             max_area = cat_polygons['PolyArea'].max() if 'PolyArea' in cat_polygons.columns else cat_polygons.geometry.area.max()
             print(f"    Max area in category: {max_area:,.0f} m²")
     else:
-        print("✅ All categories preserved")
+        print("All categories preserved")
 
 # Check area preservation
 original_total_area = GRP['PolyArea'].sum()
@@ -57,11 +57,11 @@ area_diff_pct = ((split_total_area - original_total_area) / original_total_area)
 print(f"Area preservation: {area_diff_pct:.4f}% difference")
 
 if abs(area_diff_pct) > 5.0:
-    print("⚠️  WARNING: Significant area change detected!")
+    print("WARNING: Significant area change detected!")
 elif abs(area_diff_pct) > 1.0:
-    print("ℹ️  Notice: Minor area change detected")
+    print("NOTICE: Minor area change detected.")
 else:
-    print("✅ Area preservation within expected limits")
+    print("ALL FINE: Area preservation within expected limits!")
 print("=" * 50)
 
 # 2) Vegetation analysis -------------------------------------------------------------------
