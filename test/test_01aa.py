@@ -12,7 +12,7 @@ GRP = explode_pid("D:/KPI/vector/GRPfullNAME.geojson", field_to_string="NAME_ENG
 # Add 'PolyArea' column 
 GRP['PolyArea'] = GRP.geometry.area
 
-# Rename data (no splitting -> preserving all features):
+# Rename data (no splitting -> preserving all features)
 GRP_no_split = GRP
 
 # 2) Vegetation analysis -------------------------------------------------------------------
