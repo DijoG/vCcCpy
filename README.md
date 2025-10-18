@@ -37,7 +37,7 @@ pip install -e .
 - In **test** directory: 
     - ***test_01aa.py*** is for chunkwise processing without pre-splitting by ***get_VEGETATION()***,
     - ***test_01a.py*** combined with ***test_01b.py*** shows pre-splitting by ***get_VEGETATION()*** and feature aggregation by ***aggregate_by_field()***,
-    - ***test_02.py*** is for vegetation ratio and area computation by ***get_VCration()*** and ***getVCarea()***.
+    - ***test_02.py*** is for vegetation ratio and area computation by ***get_VCratio()*** and ***getVCarea()***.
 - ***get_VEGETATION()*** was developed and tested using 0.3m resolution raster data.
 - ***get_VCratio()*** and ***get_VCarea()*** were developed and tested using 10m resolution STACKED raster data.
 - **Please NEVER change the code of the scripts present in this repository!**
