@@ -33,7 +33,7 @@ pip install -e .
 
 - Input raster **MUST BE** binarized (1 = vegetation or canopy, 0 = everything else)!
 - Use **default (no pre-splitting) chunkwise processing**!
-- Pre-split only **in case of very large files (or low computational resorces)**! 
+- Pre-split only **in case of very large files (or low computational resources)**! 
 - In **test** directory: 
     - ***test_01aa.py*** is for chunkwise processing without pre-splitting by ***get_VEGETATION()***,
     - ***test_01a.py*** combined with ***test_01b.py*** shows pre-splitting by ***get_VEGETATION()*** and feature aggregation by ***aggregate_by_field()***,
