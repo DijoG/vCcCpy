@@ -127,7 +127,6 @@ The package generates output files in various geospatial formats (GeoPackage, Ge
 - Original polygon geometries
 - Calculated vegetation cover ratios (VCr)
 - Calculated vegetation cover areas (VCa)
-- Processing metadata and confidence metrics
 
 ## Test Scripts
 
