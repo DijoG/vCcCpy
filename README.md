@@ -50,12 +50,11 @@ pip install -e .
 ```python
 from vCcCpy.core import get_VEGETATION
 
-# Process without pre-splitting (most efficient)
+# Most efficient: default chunkwise processing (no pre-splitting) 
 results = get_VEGETATION(
     raster_path="path/to/binarized_raster.tif",
     vector_path="path/to/polygons.gpkg",
-    output_path="path/to/output.gpkg",
-    split_polygons=False  # Use chunkwise processing
+    output_path="path/to/output.gpkg"
 )
 ```
 ### Advanced Usage - With Pre-splitting
