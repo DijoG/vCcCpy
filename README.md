@@ -121,14 +121,6 @@ area_results = get_VCarea(
     output_path="path/to/area_output.gpkg"
 )
 ```
-## Test Scripts
-
-The package includes comprehensive test scripts in the test directory:
-
-- `test_01aa.py`: Chunkwise processing without pre-splitting using `get_VEGETATION()`
-- `test_01a.py` + `test_01b.py`: Pre-splitting with `get_VEGETATION()` and feature aggregation with `aggregate_by_field()`
-- `test_02.py`: Vegetation ratio and area computation with `get_VCratio()` and `get_VCarea()`
-
 ## Output
 
 The package generates output files in various geospatial formats (GeoPackage, GeoJSON, Shapefile) containing:
@@ -137,6 +129,14 @@ The package generates output files in various geospatial formats (GeoPackage, Ge
 - Calculated vegetation cover ratios (VCr)
 - Calculated vegetation cover areas (VCa)
 - Processing metadata and confidence metrics
+
+## Test Scripts
+
+The package includes comprehensive test scripts in the test directory:
+
+- `test_01aa.py`: Chunkwise processing without pre-splitting using `get_VEGETATION()`
+- `test_01a.py` + `test_01b.py`: Pre-splitting with `get_VEGETATION()` and feature aggregation with `aggregate_by_field()`
+- `test_02.py`: Vegetation ratio and area computation with `get_VCratio()` and `get_VCarea()`
 
 ## Important Notes
 
