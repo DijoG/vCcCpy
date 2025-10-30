@@ -47,7 +47,7 @@ pip install -e .
 
 ### Basic Usage - Chunkwise Processing (Recommended)
 
-```bash
+```python
 from vCcCpy.core import get_VEGETATION
 
 # Process without pre-splitting (most efficient)
@@ -60,7 +60,7 @@ results = get_VEGETATION(
 ```
 ### Advanced Usage - With Pre-splitting
 
-```bash
+```python
 import geopandas as gpd
 from vCcCpy.core import get_VEGETATION, explode_pid, aggregate_by_field
 from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
@@ -104,7 +104,7 @@ final_results = aggregate_by_field(
 ```
 ### Calculate Vegetation Cover Ratios and Areas
 
-```bash
+```python
 from vCcCpy.core import get_VCratio, get_VCarea
 
 # Calculate vegetation cover ratio
