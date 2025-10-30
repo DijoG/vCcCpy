@@ -17,13 +17,13 @@ A Python package for calculating vegetation and canopy cover ratios from high-re
 ## Installation
 
 ### Option 1: Install directly from GitHub
-```bash
+```
 ## Version 1:
 pip install git+https://github.com/DijoG/vCcCpy.git
 ```
 
 ### Option 2: Clone and install in development mode
-```bash
+```
 git clone https://github.com/DijoG/vCcCpy.git
 cd vCcCpy
 pip install -e .
@@ -47,7 +47,7 @@ pip install -e .
 
 ### Basic Usage - Chunkwise Processing (Recommended)
 
-```bash
+```
 from vCcCpy.core import get_VEGETATION
 
 # Process without pre-splitting (most efficient)
@@ -60,7 +60,7 @@ results = get_VEGETATION(
 ```
 ### Advanced Usage - With Pre-splitting
 
-```bash
+```
 import geopandas as gpd
 from vCcCpy.core import get_VEGETATION, explode_pid, aggregate_by_field
 from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
@@ -104,7 +104,7 @@ final_results = aggregate_by_field(
 ```
 ### Calculate Vegetation Cover Ratios and Areas
 
-```bash
+```
 from vCcCpy.core import get_VCratio, get_VCarea
 
 # Calculate vegetation cover ratio
