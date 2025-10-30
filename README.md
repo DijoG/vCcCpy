@@ -62,7 +62,7 @@ results = get_VEGETATION(
 
 ```bash
 import geopandas as gpd
-from vCcCpy.core import get_VEGETATION, explode_pid, ggregate_by_field
+from vCcCpy.core import get_VEGETATION, explode_pid, aggregate_by_field
 from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
 
 # Load and prepare data
