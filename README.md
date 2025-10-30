@@ -22,7 +22,7 @@ A Python package for calculating vegetation and canopy cover ratios from high-re
 pip install git+https://github.com/DijoG/vCcCpy.git
 ```
 
-### Ottion 2: Clone and install in development mode
+### Option 2: Clone and install in development mode
 ```bash
 git clone https://github.com/DijoG/vCcCpy.git
 cd vCcCpy
@@ -35,21 +35,20 @@ pip install -e .
 - NumPy (≥1.20)
 - tqdm (≥4.60)
 - pandas (≥1.3)
-
-## Important Notes
-
-- Input raster **MUST BE** binarized (1 = vegetation or canopy, 0 = everything else)
-- Use **default (no pre-splitting) chunkwise processing**!
-- Pre-splitting is only recommended for very large files or low computational resources 
-- `get_VEGETATION()` was developed and tested with 0.3m resolution raster data.
-- `get_VCratio()` and `get_VCarea()` were developed and tested with 10m resolution STACKED raster data
+- geopandas (≥0.14.0)
+- rasterio (≥1.3.8)
+- rioxarray (≥0.15.0)
+- shapely (≥2.0.2)
+- pyproj (≥3.6.1)
+- dask (≥2023.10.0)
+- dask-geopandas (≥0.3.0)
 
 ## Usage Example
 
 ### Basic Usage - Chunkwise Processing (Recommended)
 
 ```bash
-from vCcCpy import get_VEGETATION
+from vCcCpy.core import get_VEGETATION
 
 # Process without pre-splitting (most efficient)
 results = get_VEGETATION(
@@ -62,27 +61,51 @@ results = get_VEGETATION(
 ### Advanced Usage - With Pre-splitting
 
 ```bash
-from vCcCpy import get_VEGETATION, aggregate_by_field
+import geopandas as gpd
+from vCcCpy.core import get_VEGETATION, explode_pid, ggregate_by_field
+from vCcCpy.splitter import split_large_polygons, analyze_polygon_sizes
 
-# Step 1: Split and process large polygons
-split_results = get_VEGETATION(
-    raster_path="path/to/binarized_raster.tif",
-    vector_path="path/to/polygons.gpkg",
-    output_path="path/to/split_output.gpkg",
-    split_polygons=True  # Enable pre-splitting for very large files
+# Load and prepare data
+GRP = explode_pid("path/to/vector.geojson", field_to_string='MCAT')
+
+# Filter specific categories for testing
+GRP_test = GRP[GRP['MCAT'].isin(["Large_Parks", "Wadis"])].copy()
+
+# Step 1: Define splitting strategies based on analysis
+strategies = {
+    "Wadis": {"threshold": 5000000, "n_areas": 30},
+    "Large_Parks": {"threshold": 200000, "n_areas": 20}
+}
+
+# Step 2: Pre-split large polygons
+GRP_pre_split = split_large_polygons(
+    gdf=GRP_test, 
+    category_field="MCAT", 
+    splitting_strategies=strategies,
+    id_field="pid"
 )
 
-# Step 2: Aggregate results by original polygon IDs
+# Step 3: Process split polygons
+result = get_VEGETATION(
+    polygons=GRP_pre_split,
+    veg_raster="path/to/binarized_raster.tif",
+    output_path="path/to/split_output.gpkg",
+    id_field="pid",
+    by_row=True,
+    return_result=True
+)
+
+# Step 4: Aggregate processed polygons
 final_results = aggregate_by_field(
     input_path="path/to/split_output.gpkg",
-    output_path="path/to/final_output.gpkg",
-    field_name="original_id"  # Field containing original polygon identifiers
+    output_path="path/to/final_aggregated.gpkg",
+    field_name="pid"  # Field containing original polygon identifiers
 )
 ```
 ### Calculate Vegetation Cover Ratios and Areas
 
 ```bash
-from vCcCpy import get_VCratio, get_VCarea
+from vCcCpy.core import get_VCratio, get_VCarea
 
 # Calculate vegetation cover ratio
 ratio_results = get_VCratio(
@@ -114,6 +137,15 @@ The package generates output files in various geospatial formats (GeoPackage, Ge
 - Calculated vegetation cover ratios (VCr)
 - Calculated vegetation cover areas (VCa)
 - Processing metadata and confidence metrics
+
+## Important Notes
+
+- Input raster MUST be binarized (1 = vegetation/canopy, 0 = everything else)
+- Default processing: Use `get_VEGETATION()` directly for most cases
+- Pre-splitting is only recommended for extremely large files → use `test_01a.py` + `test_01b.py`
+- Splitting strategies: Define different thresholds for different polygon categories
+- `get_VEGETATION()` was developed and tested with 0.3m resolution raster data.
+- `get_VCratio()` and `get_VCarea()` were developed and tested with 10m resolution STACKED raster data
 
 ## Memory Management
 
