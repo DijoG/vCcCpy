@@ -99,7 +99,7 @@ result = get_VEGETATION(
 final_results = aggregate_by_field(
     input_path="path/to/split_output.gpkg",
     output_path="path/to/final_aggregated.gpkg",
-    field_name="pid"  # Field containing original polygon identifiers
+    field_name="pid"  # or 'MCAT', a field containing original polygon identifiers
 )
 ```
 ### Calculate Vegetation Cover Ratios and Areas
