@@ -108,7 +108,7 @@ The package includes comprehensive test scripts in the test directory:
 
 ## Output
 
-The package generates GeoPackage files containing:
+The package generates output files in various geospatial formats (GeoPackage, GeoJSON, Shapefile) containing:
 
 - Original polygon geometries
 - Calculated vegetation cover ratios (VCr)
