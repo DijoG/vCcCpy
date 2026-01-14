@@ -45,7 +45,7 @@ pip install -e .
 
 ## Usage Example
 
-### Basic Usage - Chunkwise Processing (Recommended)
+### 1) Basic Usage (0.3m resolution) - Chunkwise Processing (Recommended)
 
 ```python
 from vCcCpy.core import get_VEGETATION
@@ -57,7 +57,7 @@ results = get_VEGETATION(
     output_path="path/to/output.gpkg"
 )
 ```
-### Advanced Usage - With Pre-splitting
+### 2) Advanced Usage (0.3m resolution) - With Pre-splitting 
 
 ```python
 import geopandas as gpd
@@ -101,7 +101,7 @@ final_results = aggregate_by_field(
     field_name="pid"  # or 'MCAT', a field containing original polygon identifiers
 )
 ```
-### Calculate Vegetation Cover Ratios and Areas
+### 3) Calculate Vegetation Cover Ratios and Areas (10m resolution)
 
 ```python
 from vCcCpy.core import get_VCratio, get_VCarea
